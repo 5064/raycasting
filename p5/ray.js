@@ -3,28 +3,48 @@ class Ray {
         this.p5 = p5
         this.posX = x1;
         this.posY = y1;
-        this.dirX = x2;
-        this.dirY = y2;
+        this.dirX = x2 * 1000;
+        this.dirY = y2 * 1000;
     }
 
     show = () => {
         this.p5.push()
         this.p5.strokeWeight(1);
-        this.p5.stroke(255);
+        this.p5.stroke(128);
         this.p5.translate(this.posX, this.posY)
-        this.p5.line(0, 0, this.dirX * 1000, this.dirY * 1000)
+        this.p5.line(0, 0, this.dirX, this.dirY)
         this.p5.pop()
     }
 
     cast = (wall) => {
-        const x1 = wall.a.x;
-        const y1 = wall.a.y;
-        const x2 = wall.b.x;
-        const y2 = wall.b.y;
+        const x1 = wall.x1;
+        const y1 = wall.y1;
+        const x2 = wall.x2;
+        const y2 = wall.y2;
 
         const x3 = this.posX;
-        const y3 = this.posy;
+        const y3 = this.posY;
         const x4 = this.posX + this.dirX;
-        const y4 = this.posX + this.dirY;
+        const y4 = this.posY + this.dirY;
+
+        const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        if (denominator === 0) {
+            return null;
+        }
+        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
+        const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denominator;
+        if (t > 0 && t < 1 && u > 0) {
+            const pt = this.p5.createVector();
+            pt.x = x1 + t * (x2 - x1);
+            pt.y = y1 + t * (y2 - y1);
+            return pt;
+        } else {
+            return null;
+        }
+    }
+
+    setDir = (pt) => {
+        this.dirX = pt.x - this.posX
+        this.dirY = pt.y - this.posY
     }
 }

@@ -9,7 +9,7 @@ class Boundary {
 
     show = () => {
         this.p5.push()
-        this.p5.strokeWeight(2);
+        this.p5.strokeWeight(3);
         this.p5.stroke(255);
         this.p5.line(this.x1, this.y1, this.x2, this.y2)
         this.p5.pop()
