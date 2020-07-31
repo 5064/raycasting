@@ -16,11 +16,11 @@ class Ray {
         this.p5.pop()
     }
 
-    cast = (wall) => {
-        const x1 = wall.x1;
-        const y1 = wall.y1;
-        const x2 = wall.x2;
-        const y2 = wall.y2;
+    cast = (boundary) => {
+        const x1 = boundary.x1;
+        const y1 = boundary.y1;
+        const x2 = boundary.x2;
+        const y2 = boundary.y2;
 
         const x3 = this.posX;
         const y3 = this.posY;

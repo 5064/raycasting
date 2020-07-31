@@ -4,25 +4,12 @@ const RayCasting = new p5((p5) => {
 
     const boundaries = [];
 
-    renderRay = () => {
-        for (let a = 0; a < 2 * Math.PI; a += (2 * Math.PI) / 90) {
-            const aY = Math.sin(a);
-            const aX = Math.cos(a);
-            const r = new Ray(p5, p5.mouseX, p5.mouseY, aX, aY);
-            for (let boundary of boundaries) {
-                const pt = r.cast(boundary);
-                if (pt) {
-                    r.setDir(pt)
-                }
-            }
-            r.show();
-        }
-    }
-
     prepareBoundary = () => {
-        const b = new Boundary(p5, 40, 40, 150, 100);
-        const b2 = new Boundary(p5, 500, 300, 450, 100);
-        boundaries.push(b, b2)
+        const b = new Boundary(p5, 40, 40, 150, 100),
+            b2 = new Boundary(p5, 500, 300, 450, 100),
+            b3 = new Boundary(p5, 450, 100, 300, 70),
+            b4 = new Boundary(p5, 500, 300, 250, 400);
+        boundaries.push(b, b2, b3, b4)
     }
 
     p5.setup = () => {
@@ -35,6 +22,8 @@ const RayCasting = new p5((p5) => {
         for (let boundary of boundaries) {
             boundary.show()
         }
-        renderRay();
+        const lightSource = new LightSource(p5);
+        lightSource.cast(boundaries)
+        lightSource.show()
     }
 })
