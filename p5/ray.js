@@ -1,18 +1,21 @@
 class Ray {
+    pos = {};
+    dir = {};
+
     constructor(p5, x1, y1, x2, y2) {
         this.p5 = p5
-        this.posX = x1;
-        this.posY = y1;
-        this.dirX = x2 * 1000;
-        this.dirY = y2 * 1000;
+        this.pos.x = x1;
+        this.pos.y = y1;
+        this.dir.x = x2 * 1000;
+        this.dir.y = y2 * 1000;
     }
 
     show = () => {
         this.p5.push()
         this.p5.strokeWeight(1);
         this.p5.stroke(128);
-        this.p5.translate(this.posX, this.posY)
-        this.p5.line(0, 0, this.dirX, this.dirY)
+        this.p5.translate(this.pos.x, this.pos.y)
+        this.p5.line(0, 0, this.dir.x, this.dir.y)
         this.p5.pop()
     }
 
@@ -22,10 +25,10 @@ class Ray {
         const x2 = boundary.x2;
         const y2 = boundary.y2;
 
-        const x3 = this.posX;
-        const y3 = this.posY;
-        const x4 = this.posX + this.dirX;
-        const y4 = this.posY + this.dirY;
+        const x3 = this.pos.x;
+        const y3 = this.pos.y;
+        const x4 = this.pos.x + this.dir.x;
+        const y4 = this.pos.y + this.dir.y;
 
         const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
         if (denominator === 0) {
@@ -44,7 +47,7 @@ class Ray {
     }
 
     setDir = (pt) => {
-        this.dirX = pt.x - this.posX
-        this.dirY = pt.y - this.posY
+        this.dir.x = pt.x - this.pos.x
+        this.dir.y = pt.y - this.pos.y
     }
 }

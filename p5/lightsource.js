@@ -18,10 +18,7 @@ class LightSource {
             for (let boundary of boundaries) {
                 const pt = r.cast(boundary)
                 if (pt) {
-                    this.p5.push();
-                    this.p5.translate(this.p5.mouseX, this.p5.mouseY);
-                    const distance = pt.mag();
-                    this.p5.pop();
+                    const distance = Math.sqrt((pt.x - this.p5.mouseX) ** 2 + (pt.y - this.p5.mouseY) ** 2);
                     if (distance < minDistance) {
                         minDistance = distance
                         r.setDir(pt);

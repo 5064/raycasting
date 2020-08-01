@@ -1,4 +1,9 @@
 class Boundary {
+    x1;
+    y1;
+    x2;
+    y2;
+
     constructor(p5, x1, y1, x2, y2) {
         this.p5 = p5
         this.x1 = x1;
