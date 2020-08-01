@@ -13,19 +13,27 @@ class LightSource {
     }
 
     cast(boundaries) {
-        for (let boundary of boundaries) {
-            this.rays.forEach(r => {
+        this.rays.forEach(r => {
+            let minDistance = Infinity
+            for (let boundary of boundaries) {
                 const pt = r.cast(boundary)
                 if (pt) {
-                    r.setDir(pt)
+                    this.p5.push();
+                    this.p5.translate(this.p5.mouseX, this.p5.mouseY);
+                    const distance = pt.mag();
+                    this.p5.pop();
+                    if (distance < minDistance) {
+                        minDistance = distance
+                        r.setDir(pt);
+                    }
                 }
-            })
-        }
+            }
+        })
     }
 
     show() {
         this.rays.forEach(r => {
-            r.show()
+            r.show();
         })
     }
 }
