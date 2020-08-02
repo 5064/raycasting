@@ -1,4 +1,4 @@
-const RayCasting = new p5((p5) => {
+const Sketch = new p5((p5) => {
     const CANVAS_X = 1000,
         CANVAS_Y = 600;
 
