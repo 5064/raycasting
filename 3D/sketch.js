@@ -25,6 +25,8 @@ const Sketch = new p5((p5) => {
     const MAP_CELLS_COL_NUM = 18;
     const MAP_CELL_PX = CANVAS_Y / MAP_CELLS_COL_NUM;
 
+    let player;
+
     draw2dMiniMap = () => {
         p5.push();
         p5.translate(CANVAS_X + 10, 0);
@@ -42,12 +44,14 @@ const Sketch = new p5((p5) => {
 
     p5.setup = () => {
         p5.createCanvas(CANVAS_X + (MAP_CELLS_COL_NUM * MAP_CELL_PX) + 10, CANVAS_Y);
+        player = new Player(p5, CANVAS_X + MAP_CELL_PX * 1.5, MAP_CELL_PX * 1.5);
+        document.onkeydown = player.controller;
     }
 
     p5.draw = () => {
         p5.background(0);
         draw2dMiniMap();
-        const player = new Player(p5, CANVAS_X + MAP_CELL_PX * 1.5, MAP_CELL_PX * 1.5);
+        player.updateGaze();
         // Player.cast(MAP_CELLS);
         player.show()
     }
