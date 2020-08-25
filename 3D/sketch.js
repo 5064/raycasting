@@ -51,7 +51,7 @@ const Sketch = new p5((p5) => {
     p5.draw = () => {
         p5.background(0);
         draw2dMiniMap();
-        player.updateGaze();
+        player.initGaze();
         // Player.cast(MAP_CELLS);
         player.show()
     }
