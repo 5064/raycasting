@@ -22,17 +22,18 @@ const Sketch = new p5((p5) => {
       CANVAS_X + MAP_CELLS_COL_NUM * MAP_CELL_PX + D_MARGIN,
       CANVAS_Y
     );
-    document.onkeydown = player.controller;
   };
 
   p5.draw = () => {
     p5.background(0);
     map.draw2dMiniMap();
+    player.controller();
     if (player.isMouseModeEnable) {
       player.controlWithMouse();
     }
     player.initGaze();
-    // Player.cast(MAP_CELLS);
+    player.cast();
     player.show();
+    // p5.noLoop();
   };
 });

@@ -1,71 +1,89 @@
-import { MAP_CELLS, MAP_CELL_PX } from "./settings.js";
+import { CANVAS_X, D_MARGIN, MAP_CELLS, MAP_CELL_PX } from "./settings.js";
 
 // Ray
 export class Ray {
-  SIGHT = 200; // eyesight power
+  SIGHT = 100; // eyesight power
   pos = {}; // player position
   dir = {};
+  intersectionVec = {};
 
   constructor(p5, x1, y1, x2, y2, cell, offset) {
     this.p5 = p5;
     this.pos = p5.createVector(x1, y1);
     this.dir = p5.createVector(x2 * this.SIGHT, y2 * this.SIGHT);
     this.cell = cell;
-    this.offset = offset;
+    this.offset = p5.createVector(offset.x, offset.y);
   }
 
   show = () => {
     this.p5.push();
     this.p5.strokeWeight(1);
-    this.p5.stroke("#820600");
+    this.p5.stroke("#FFFFFF");
     this.p5.translate(this.pos.x, this.pos.y);
     this.p5.line(0, 0, this.dir.x, this.dir.y);
+    this.p5.strokeWeight(1);
+    this.p5.stroke("#820600");
+    this.p5.line(0, 0, this.intersectionVec.x, this.intersectionVec.y);
     this.p5.pop();
   };
 
   // DDA Algorithm
   // https://www.youtube.com/watch?v=NbSee-XM7WA
   cast = () => {
-    const rayVec = p5.Vector2d.sub(this.dir, this.pos).normalize();
+    const rayVec = this.dir.copy();
 
-    const rayUnitStepSize = {
-      x: Math.sqrt(1 + rayVec.y ** 2 / rayVec.x ** 2), //x方向に1unit動くときのベクトルのサイズ
-      y: Math.sqrt(1 + rayVec.x ** 2 / rayVec.y ** 2), //y方向に1unit動くときのベクトルのサイズ
+    const rayCellStepSize = {
+      x: (MAP_CELL_PX * rayVec.mag()) / Math.abs(rayVec.x), //x方向に1cell動くときのベクトルのサイズ
+      y: (MAP_CELL_PX * rayVec.mag()) / Math.abs(rayVec.y), //y方向に1cell動くときのベクトルのサイズ
     };
-    let stepX, stepY; // x,yそれぞれどちらにスカラー倍していくかの変数(+1 or -1) depend on rayVec
+    // console.log(rayCellStepSize);
+
+    let stepX = 0;
+    let stepY = 0; // MAP_CELLSインデックスの方向の変数(+1 or -1) depend on rayVec
+    const accVec = this.p5.createVector();
 
     if (rayVec.x < 0) {
       stepX = -1;
+      accVec.x = (rayCellStepSize.x * this.offset.x) / MAP_CELL_PX;
     } else {
       stepX = 1;
+      accVec.x =
+        (rayCellStepSize.x * this.offset.x) / (MAP_CELL_PX - this.offset.x);
     }
     if (rayVec.y < 0) {
       stepY = -1;
+      accVec.y = (rayCellStepSize.y * this.offset.y) / MAP_CELL_PX;
     } else {
       stepY = 1;
+      accVec.y =
+        (rayCellStepSize.y * this.offset.y) / (MAP_CELL_PX - this.offset.y);
     }
 
     let isTileFound = false;
     let cellX = this.cell.x;
     let cellY = this.cell.y;
-    while (!isTileFound) {
+
+    let accX = 0;
+    let accY = 0; // accumulate
+    while (!isTileFound && accVec.mag() < this.dir.mag()) {
       //jump to next map square, OR in x-direction, OR in y-direction
-      if (sideDistX < sideDistY) {
-        sideDistX += deltaDistX;
+      if (accX < accY) {
+        accX += rayCellStepSize.x;
         cellX += stepX;
-        side = 0;
+        accVec.x = accX;
       } else {
-        sideDistY += deltaDistY;
+        accY += rayCellStepSize.y;
         cellY += stepY;
-        side = 1;
+        accVec.y = accY;
       }
       //Check if ray has hit a wall
-      if (MAP_CELLS[cellX][cellY] > 0) isTileFound = true;
+      if (MAP_CELLS[cellY][cellX] > 0) {
+        isTileFound = true;
+      }
     }
-  };
+    const copy = this.dir.copy();
+    copy.normalize().mult(accVec.mag());
 
-  setDir = (pt) => {
-    this.dir.x = pt.x - this.pos.x;
-    this.dir.y = pt.y - this.pos.y;
+    this.intersectionVec = this.p5.createVector(copy.x, copy.y);
   };
 }
