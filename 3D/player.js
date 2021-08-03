@@ -5,11 +5,12 @@ import {
   MAP_CELL_PX,
   MAP_CELLS_COL_NUM,
   D_MARGIN,
+  RAY_COUNT,
 } from "./settings.js";
-import { Ray } from "./gaze.js";
+import { Ray } from "./ray.js";
 
 export class Player {
-  FOV = Math.PI / 2;
+  FOV = Math.PI / 3;
   angle = Math.PI / 2; // center of player view
   SPEED = 2;
 
@@ -30,7 +31,7 @@ export class Player {
 
   initGaze = () => {
     this.rays = [];
-    for (let theta = 0; theta < this.FOV; theta += this.FOV / 10) {
+    for (let theta = 0; theta < this.FOV; theta += this.FOV / RAY_COUNT) {
       this.rays.push(
         new Ray(
           this.p5,
@@ -106,7 +107,7 @@ export class Player {
     }
     if (this.p5.keyIsDown(77)) {
       // M
-      // this.isMouseModeEnable = !this.isMouseModeEnable;
+      this.isMouseModeEnable = !this.isMouseModeEnable;
     }
   };
 
@@ -130,7 +131,19 @@ export class Player {
     this.p5.pop();
   }
 
+  show3d() {
+    this.p5.push();
+    this.p5.translate(MAP_CELLS_COL_NUM*MAP_CELL_PX + D_MARGIN, 0)
+    this.p5.fill("#52006A")
+    this.p5.rect(0,0,CANVAS_X,CANVAS_Y/2)  // sky
+    this.rays.map((r,i) => {
+      r.show3d(i);
+    });
+    this.p5.pop();
+  }
+
   show() {
     this.show2d();
+    this.show3d();
   }
 }

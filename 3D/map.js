@@ -1,8 +1,6 @@
-import { CANVAS_X, D_MARGIN, MAP_CELLS, MAP_CELL_PX } from "./settings.js";
+import { MAP_CELLS, MAP_CELL_PX } from "./settings.js";
 
 export class Map {
-  walls = [];
-
   constructor(p5) {
     this.p5 = p5;
   }
