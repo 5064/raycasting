@@ -9,7 +9,7 @@ import {
 import { Ray } from "./gaze.js";
 
 export class Player {
-  FOV = Math.PI / 3;
+  FOV = Math.PI / 2;
   angle = Math.PI / 2; // center of player view
   SPEED = 2;
 
@@ -52,13 +52,13 @@ export class Player {
   };
   calcCell = (posX, posY) => {
     return {
-      x: Math.floor((posX - CANVAS_X - D_MARGIN) / MAP_CELL_PX),
+      x: Math.floor(posX / MAP_CELL_PX),
       y: Math.floor(posY / MAP_CELL_PX),
     };
   };
   updateOffset = () => {
     this.offset = {
-      x: this.pos.x - CANVAS_X - D_MARGIN - MAP_CELL_PX * this.cell.x,
+      x: this.pos.x - MAP_CELL_PX * this.cell.x,
       y: this.pos.y - MAP_CELL_PX * this.cell.y,
     };
   };
@@ -106,14 +106,14 @@ export class Player {
     }
     if (this.p5.keyIsDown(77)) {
       // M
-      this.isMouseModeEnable = !this.isMouseModeEnable;
+      // this.isMouseModeEnable = !this.isMouseModeEnable;
     }
   };
 
   controlWithMouse = () => {
     // precompute before change state
     const c = this.calcCell(this.p5.mouseX, this.p5.mouseY);
-    if (MAP_CELLS[c.y][c.x] > 0 || this.p5.mouseX < CANVAS_X + D_MARGIN) {
+    if (MAP_CELLS[c.y][c.x] > 0 || this.p5.mouseX > MAP_CELLS_COL_NUM * MAP_CELL_PX) {
       // can't move so that hit the wall || pointing minimap outside
       return;
     }

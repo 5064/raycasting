@@ -2,7 +2,7 @@ import { CANVAS_X, D_MARGIN, MAP_CELLS, MAP_CELL_PX } from "./settings.js";
 
 // Ray
 export class Ray {
-  SIGHT = 100; // eyesight power
+  SIGHT = 150; // eyesight power
   pos = {}; // player position
   dir = {};
   intersectionVec = {};
@@ -33,8 +33,8 @@ export class Ray {
     const rayVec = this.dir.copy();
 
     const rayCellStepSize = {
-      x: (MAP_CELL_PX * rayVec.mag()) / Math.abs(rayVec.x), //x方向に1cell動くときのベクトルのサイズ
-      y: (MAP_CELL_PX * rayVec.mag()) / Math.abs(rayVec.y), //y方向に1cell動くときのベクトルのサイズ
+      x: rayVec.x===0?0:(MAP_CELL_PX * rayVec.mag()) / Math.abs(rayVec.x), //x方向に1cell動くときのベクトルのサイズ
+      y: rayVec.y===0?0:(MAP_CELL_PX * rayVec.mag()) / Math.abs(rayVec.y), //y方向に1cell動くときのベクトルのサイズ
     };
     // console.log(rayCellStepSize);
 
@@ -48,7 +48,7 @@ export class Ray {
     } else {
       stepX = 1;
       accVec.x =
-        (rayCellStepSize.x * this.offset.x) / (MAP_CELL_PX - this.offset.x);
+        rayCellStepSize.x * (MAP_CELL_PX - this.offset.x) / MAP_CELL_PX;
     }
     if (rayVec.y < 0) {
       stepY = -1;
@@ -56,25 +56,26 @@ export class Ray {
     } else {
       stepY = 1;
       accVec.y =
-        (rayCellStepSize.y * this.offset.y) / (MAP_CELL_PX - this.offset.y);
+        rayCellStepSize.y * (MAP_CELL_PX - this.offset.y) / MAP_CELL_PX;
     }
 
     let isTileFound = false;
     let cellX = this.cell.x;
     let cellY = this.cell.y;
 
-    let accX = 0;
-    let accY = 0; // accumulate
-    while (!isTileFound && accVec.mag() < this.dir.mag()) {
+    let accX = accVec.x;
+    let accY = accVec.y; // accumulate
+    let distance = 0
+    while (!isTileFound && distance < this.dir.mag()) {
       //jump to next map square, OR in x-direction, OR in y-direction
       if (accX < accY) {
-        accX += rayCellStepSize.x;
         cellX += stepX;
-        accVec.x = accX;
+        distance = accX;
+        accX += rayCellStepSize.x;
       } else {
-        accY += rayCellStepSize.y;
         cellY += stepY;
-        accVec.y = accY;
+        distance = accY;
+        accY += rayCellStepSize.y;
       }
       //Check if ray has hit a wall
       if (MAP_CELLS[cellY][cellX] > 0) {
@@ -82,8 +83,8 @@ export class Ray {
       }
     }
     const copy = this.dir.copy();
-    copy.normalize().mult(accVec.mag());
+    copy.normalize().mult(distance);
 
-    this.intersectionVec = this.p5.createVector(copy.x, copy.y);
+    this.intersectionVec = this.p5.createVector(copy.x, copy.y)
   };
 }

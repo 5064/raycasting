@@ -1,7 +1,6 @@
 import {
   CANVAS_X,
   CANVAS_Y,
-  MAP_CELLS,
   MAP_CELL_PX,
   MAP_CELLS_COL_NUM,
   D_MARGIN,
@@ -12,7 +11,7 @@ import { Player } from "./player.js";
 const Sketch = new p5((p5) => {
   const player = new Player(
     p5,
-    CANVAS_X + D_MARGIN + MAP_CELL_PX * 1.5,
+    MAP_CELL_PX * 1.5,
     MAP_CELL_PX * 1.5
   );
   const map = new Map(p5);

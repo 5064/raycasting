@@ -8,7 +8,6 @@ export class Map {
   }
   draw2dMiniMap = () => {
     this.p5.push();
-    this.p5.translate(CANVAS_X + D_MARGIN, 0);
     this.p5.fill(178);
     this.p5.noStroke();
     for (let y = 0; y < MAP_CELLS.length; y++) {
