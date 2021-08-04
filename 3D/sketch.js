@@ -33,6 +33,8 @@ const Sketch = new p5((p5) => {
     player.initGaze();
     player.cast();
     player.show();
-    // p5.noLoop();
+    // draw margin
+    p5.fill(255)
+    p5.rect(MAP_CELLS_COL_NUM * MAP_CELL_PX,0,D_MARGIN,CANVAS_Y)
   };
 });

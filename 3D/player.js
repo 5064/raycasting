@@ -11,7 +11,7 @@ import { Ray } from "./ray.js";
 
 export class Player {
   FOV = Math.PI / 3;
-  angle = Math.PI / 2; // center of player view
+  DIR_ANGLE = Math.PI / 2; // center of player view
   SPEED = 2;
 
   pos = {}; // coordinate in canvas
@@ -24,21 +24,20 @@ export class Player {
 
   constructor(p5, x, y) {
     this.p5 = p5;
-    this.pos = { x: x, y: y };
+    this.pos = p5.createVector(x,y);
     const t = this.calcCell(this.pos.x, this.pos.y);
     this.move(t, this.pos.x, this.pos.y);
   }
 
   initGaze = () => {
     this.rays = [];
-    for (let theta = 0; theta < this.FOV; theta += this.FOV / RAY_COUNT) {
+    for (let theta = this.DIR_ANGLE-this.FOV/2; theta < this.DIR_ANGLE+this.FOV/2; theta += this.FOV / RAY_COUNT) {
       this.rays.push(
         new Ray(
           this.p5,
-          this.pos.x,
-          this.pos.y,
-          Math.cos(theta + (this.angle - this.FOV / 2)),
-          Math.sin(theta + (this.angle - this.FOV / 2)),
+          this.pos,
+          this.p5.createVector(Math.cos(theta),Math.sin(theta)),
+          this.DIR_ANGLE - theta,
           this.cell,
           this.offset
         )
@@ -77,8 +76,8 @@ export class Player {
     if (this.p5.keyIsDown(87)) {
       // W
       // precompute future positions before change state
-      let fX = this.pos.x + Math.cos(this.angle) * this.SPEED;
-      let fY = this.pos.y + Math.sin(this.angle) * this.SPEED;
+      let fX = this.pos.x + Math.cos(this.DIR_ANGLE) * this.SPEED;
+      let fY = this.pos.y + Math.sin(this.DIR_ANGLE) * this.SPEED;
       let fCell = this.calcCell(fX, fY);
       if (MAP_CELLS[fCell.y][fCell.x] > 0) {
         // hit the wall so can't move
@@ -88,8 +87,8 @@ export class Player {
     } else if (this.p5.keyIsDown(83)) {
       // S
       // precompute before change state
-      let fX = this.pos.x - Math.cos(this.angle) * this.SPEED;
-      let fY = this.pos.y - Math.sin(this.angle) * this.SPEED;
+      let fX = this.pos.x - Math.cos(this.DIR_ANGLE) * this.SPEED;
+      let fY = this.pos.y - Math.sin(this.DIR_ANGLE) * this.SPEED;
       let fCell = this.calcCell(fX, fY);
       if (MAP_CELLS[fCell.y][fCell.x] > 0) {
         // hit the wall so can't move
@@ -99,11 +98,11 @@ export class Player {
     }
     if (this.p5.keyIsDown(68)) {
       // D
-      this.angle += Math.PI / 100;
+      this.DIR_ANGLE += Math.PI / 100;
     }
     if (this.p5.keyIsDown(65)) {
       // A
-      this.angle -= Math.PI / 100;
+      this.DIR_ANGLE -= Math.PI / 100;
     }
     if (this.p5.keyIsDown(77)) {
       // M
@@ -134,8 +133,12 @@ export class Player {
   show3d() {
     this.p5.push();
     this.p5.translate(MAP_CELLS_COL_NUM*MAP_CELL_PX + D_MARGIN, 0)
-    this.p5.fill("#52006A")
-    this.p5.rect(0,0,CANVAS_X,CANVAS_Y/2)  // sky
+    // draw sky
+    this.p5.fill("#66bbea")
+    this.p5.rect(0,0,CANVAS_X,CANVAS_Y/2)
+    // draw ground
+    this.p5.fill("#DE10D1")
+    this.p5.rect(0,CANVAS_Y/2,CANVAS_X,CANVAS_Y/2)
     this.rays.map((r,i) => {
       r.show3d(i);
     });

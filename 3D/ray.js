@@ -2,15 +2,19 @@ import { CANVAS_X, CANVAS_Y, D_MARGIN, MAP_CELLS, MAP_CELL_PX, RAY_COUNT } from 
 
 // Ray
 export class Ray {
-  SIGHT = 300; // eyesight power
+  SIGHT = 500; // eyesight power
   pos = {}; // player position
   dir = {};
+  theta;  // radian that how different angle from player's center of view
+  cell; // current MAP_CELLS index
   intersectionVec = undefined;
+  intersectAxis=undefined;
 
-  constructor(p5, x1, y1, x2, y2, cell, offset) {
+  constructor(p5, pos, dir, theta, cell, offset) {
     this.p5 = p5;
-    this.pos = p5.createVector(x1, y1);
-    this.dir = p5.createVector(x2 * this.SIGHT, y2 * this.SIGHT);
+    this.pos = pos;
+    this.dir = p5.createVector(dir.x * this.SIGHT, dir.y * this.SIGHT);
+    this.theta = theta
     this.cell = cell;
     this.offset = p5.createVector(offset.x, offset.y);
   }
@@ -34,14 +38,17 @@ export class Ray {
     if (this.intersectionVec == undefined) {
       return;
     }
-    const ratio = (1- this.intersectionVec.mag() / this.SIGHT)
-    const height = CANVAS_Y * ratio
-    const whiteness = this.p5.map(ratio,0,1,70,255)
+    const ratio = Math.abs(this.intersectionVec.mag() * Math.cos(this.theta))
+    const height = this.p5.map(ratio,0,this.SIGHT,CANVAS_Y,0) // to avoid "fisheye" effect, multiple cos(theta)
+    let whiteness = this.p5.map(ratio,0,this.SIGHT,255,200)
+    if (this.intersectAxis =='y') {
+      whiteness -=100
+    }
     this.p5.push();
     this.p5.rectMode(this.p5.CENTER)
     this.p5.fill(whiteness)
     this.p5.noStroke()
-    this.p5.rect(i*CANVAS_X/RAY_COUNT, CANVAS_Y/2, CANVAS_X/RAY_COUNT, height);
+    this.p5.rect(i*CANVAS_X/RAY_COUNT, CANVAS_Y/2, CANVAS_X/RAY_COUNT*1.1, height);  // mult 1.1 to fill margin between each rect
     this.p5.pop();
   };
 
@@ -78,6 +85,7 @@ export class Ray {
     }
 
     let isTileFound = false;
+    let hitAxis;
     let cellX = this.cell.x;
     let cellY = this.cell.y;
 
@@ -88,14 +96,17 @@ export class Ray {
         cellX += stepX;
         distance = accX;
         accX += rayCellStepSize.x;
+        hitAxis = 'y'
       } else {
         cellY += stepY;
         distance = accY;
         accY += rayCellStepSize.y;
+        hitAxis = 'x'
       }
       //Check if ray has hit a wall
       if (MAP_CELLS[cellY][cellX] > 0) {
         isTileFound = true;
+        this.intersectAxis = hitAxis
       }
     }
 
