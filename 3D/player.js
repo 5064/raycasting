@@ -24,20 +24,24 @@ export class Player {
 
   constructor(p5, x, y) {
     this.p5 = p5;
-    this.pos = p5.createVector(x,y);
+    this.pos = p5.createVector(x, y);
     const t = this.calcCell(this.pos.x, this.pos.y);
     this.move(t, this.pos.x, this.pos.y);
   }
 
   initGaze = () => {
     this.rays = [];
-    for (let theta = this.DIR_ANGLE-this.FOV/2; theta < this.DIR_ANGLE+this.FOV/2; theta += this.FOV / RAY_COUNT) {
+    for (
+      let theta = this.DIR_ANGLE - this.FOV / 2;
+      theta < this.DIR_ANGLE + this.FOV / 2;
+      theta += this.FOV / RAY_COUNT
+    ) {
       this.rays.push(
         new Ray(
           this.p5,
           this.pos,
-          this.p5.createVector(Math.cos(theta),Math.sin(theta)),
-          this.DIR_ANGLE - theta,
+          this.p5.createVector(Math.cos(theta), Math.sin(theta)),
+          theta,
           this.cell,
           this.offset
         )
@@ -113,7 +117,10 @@ export class Player {
   controlWithMouse = () => {
     // precompute before change state
     const c = this.calcCell(this.p5.mouseX, this.p5.mouseY);
-    if (MAP_CELLS[c.y][c.x] > 0 || this.p5.mouseX > MAP_CELLS_COL_NUM * MAP_CELL_PX) {
+    if (
+      MAP_CELLS[c.y][c.x] > 0 ||
+      this.p5.mouseX > MAP_CELLS_COL_NUM * MAP_CELL_PX
+    ) {
       // can't move so that hit the wall || pointing minimap outside
       return;
     }
@@ -125,21 +132,21 @@ export class Player {
     this.p5.stroke(255);
     this.p5.circle(this.pos.x, this.pos.y, 5);
     this.rays.map((r) => {
-      r.show();
+      r.show2d();
     });
     this.p5.pop();
   }
 
   show3d() {
     this.p5.push();
-    this.p5.translate(MAP_CELLS_COL_NUM*MAP_CELL_PX + D_MARGIN, 0)
+    this.p5.translate(MAP_CELLS_COL_NUM * MAP_CELL_PX + D_MARGIN, 0);
     // draw sky
-    this.p5.fill("#66bbea")
-    this.p5.rect(0,0,CANVAS_X,CANVAS_Y/2)
+    this.p5.fill("#66bbea");
+    this.p5.rect(0, 0, CANVAS_X, CANVAS_Y / 2);
     // draw ground
-    this.p5.fill("#DE10D1")
-    this.p5.rect(0,CANVAS_Y/2,CANVAS_X,CANVAS_Y/2)
-    this.rays.map((r,i) => {
+    this.p5.fill("#DE10D1");
+    this.p5.rect(0, CANVAS_Y / 2, CANVAS_X, CANVAS_Y / 2);
+    this.rays.map((r, i) => {
       r.show3d(i);
     });
     this.p5.pop();

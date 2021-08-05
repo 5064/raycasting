@@ -1,6 +1,6 @@
 export const CANVAS_X = 1024,
   CANVAS_Y = 576;
-export const RAY_COUNT = 200  // How many generate rays
+export const RAY_COUNT = 200; // How many generate rays
 
 export const MAP_CELLS = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
